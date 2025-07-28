@@ -44,16 +44,20 @@ def insert_sample_data():
         ('Office Complex', 'Not Started', 0, '2025-06-01', 'Paul, Katie'),
     ]
 
-    cursor.executemany("INSERT INTO projects (name, status, progress, deadline, teamMembers) VALUES (?, ?, ?, ?, ?)", projects)
+    cursor.executemany("""
+        INSERT INTO projects (name, status, progress, deadline, teamMembers)
+        VALUES (?, ?, ?, ?, ?)
+    """, projects)
+
     conn.commit()
     conn.close()
 
 # Homepage route
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html')  # Make sure you create this file in templates/
 
-# Route to get all projects (now including data for charts)
+# API route to get all projects
 @app.route('/api/projects')
 def get_projects():
     conn = connect_db()
@@ -73,7 +77,9 @@ def get_projects():
 
     return jsonify(project_data)
 
+# Run the app
 if __name__ == "__main__":
-    init_db()  # Initialize the database
-    insert_sample_data()  # Insert sample data
-    app.run(debug=True)
+    init_db()  # Initialize the database with schema
+    insert_sample_data()  # Add sample data
+    app.run(debug=True)  # ✅ This line was broken earlier — now fixed!
+
